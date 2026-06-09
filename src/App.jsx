@@ -22,7 +22,7 @@ function App() {
   return (
     <ProfileProvider>
       <ActivityProvider>
-        <Router>
+        <Router basename={import.meta.env.BASE_URL}>
           <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500/30">
             <Navbar />
             <main id="main-content" className="pt-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

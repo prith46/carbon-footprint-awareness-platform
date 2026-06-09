@@ -10,8 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "git push origin main"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
@@ -32,7 +31,6 @@
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "gh-pages": "^6.3.0",
     "globals": "^17.6.0",
     "happy-dom": "^20.10.2",
     "jsdom": "^29.1.1",

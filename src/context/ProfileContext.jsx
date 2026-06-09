@@ -38,7 +38,7 @@ export const ProfileProvider = ({ children }) => {
   const setProfile = useCallback((data) => {
     setProfileState(prev => ({ 
       ...prev, 
-      ...(data.name !== undefined && { name: data.name }),
+      ...(data.name !== undefined && { name: String(data.name).slice(0, 50) }),
       ...(data.location !== undefined && { location: data.location }),
       ...(data.lifestyle !== undefined && { lifestyle: data.lifestyle }),
       ...(data.onboarded !== undefined && { onboarded: data.onboarded })

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserProfile } from '../hooks/useUserProfile';
+import { useUserProfile } from '../context/ProfileContext';
 import { Leaf } from 'lucide-react';
 
 const Home = () => {
@@ -22,6 +22,10 @@ const Home = () => {
     e.preventDefault();
     if (!name.trim()) {
       setError('Please enter your name to continue.');
+      return;
+    }
+    if (name.length > 50) {
+      setError('Name must be under 50 characters.');
       return;
     }
     setError('');
@@ -61,6 +65,7 @@ const Home = () => {
               type="text"
               id="name"
               value={name}
+              maxLength={50}
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-colors"
               placeholder="e.g. Alex"
@@ -84,7 +89,7 @@ const Home = () => {
                 <option value="rural">Rural</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
           </div>
@@ -108,7 +113,7 @@ const Home = () => {
                 <option value="Other">Other</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
           </div>

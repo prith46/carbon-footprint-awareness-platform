@@ -1,4 +1,5 @@
-import { useActivityLog } from '../hooks/useActivityLog';
+import { useMemo } from 'react';
+import { useActivityLog } from '../context/ActivityContext';
 import { getInsights } from '../utils/getInsights';
 import { Link } from 'react-router-dom';
 import { Lightbulb, ArrowRight, Activity } from 'lucide-react';
@@ -18,26 +19,26 @@ const difficultyColors = {
 };
 
 const Insights = () => {
-  const { totalCO2, breakdown } = useActivityLog();
-  const tips = getInsights(breakdown);
+  const { recentBreakdown } = useActivityLog();
+  const tips = useMemo(() => getInsights(recentBreakdown), [recentBreakdown]);
 
   return (
     <div className="max-w-5xl mx-auto py-8 space-y-8 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-bold text-slate-100 mb-2">Your Insights</h1>
-        <p className="text-slate-400">Personalized tips based on your activity.</p>
+        <p className="text-slate-400">Based on your last 30 days of activity</p>
       </div>
 
-      {totalCO2 === 0 ? (
+      {tips.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh] bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center shadow-xl">
           <div className="flex justify-center mb-6">
             <div className="bg-slate-800 p-4 rounded-full">
               <Lightbulb className="w-12 h-12 text-slate-400" />
             </div>
           </div>
-          <h2 className="text-xl font-bold text-slate-100 mb-3">No Data Yet</h2>
+          <h2 className="text-xl font-bold text-slate-100 mb-3">No Recent Data</h2>
           <p className="text-slate-400 mb-6 max-w-md">
-            Log some activities first to get personalized insights and recommendations for reducing your carbon footprint.
+            No recent activity found. Log activities in the last 30 days to get personalized insights.
           </p>
           <Link
             to="/log"
@@ -64,12 +65,14 @@ const Insights = () => {
                 {tipObj.tip}
               </h3>
               
-              <div className="mt-auto pt-4 border-t border-slate-800/50 flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-slate-400">
-                  <Activity size={16} />
-                  <span className="text-sm">Estimated Saving</span>
+              <div className="mt-auto pt-4 border-t border-slate-800/50 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-slate-400">
+                    <Activity size={16} />
+                    <span className="text-sm">Estimated Saving</span>
+                  </div>
+                  <span className="text-emerald-400 font-bold">{tipObj.estimatedSaving}</span>
                 </div>
-                <span className="text-emerald-400 font-bold">{tipObj.estimatedSaving}</span>
               </div>
             </div>
           ))}

@@ -1,42 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useActivityLog } from '../hooks/useActivityLog';
+import { useState, useEffect, useMemo } from 'react';
+import { useActivityLog } from '../context/ActivityContext';
 import { emissionFactors } from '../data/emissionFactors';
+import { typeLabels, categoryLabels, quantityLabels, quantityLimits } from '../data/labels';
+import { LOGS_PER_PAGE } from '../data/constants';
 import { Trash2, CheckCircle2 } from 'lucide-react';
-
-const typeLabels = {
-  car_petrol: 'Car (Petrol)',
-  car_diesel: 'Car (Diesel)',
-  bus: 'Bus',
-  train: 'Train',
-  flight_domestic: 'Flight (Domestic)',
-  bike: 'Bike',
-  walk: 'Walk',
-  beef_meal: 'Beef Meal',
-  chicken_meal: 'Chicken Meal',
-  fish_meal: 'Fish Meal',
-  veg_meal: 'Vegetarian Meal',
-  vegan_meal: 'Vegan Meal',
-  electricity: 'Electricity Usage',
-  ac_hour: 'AC Usage',
-  heating_hour: 'Heating Usage',
-  new_clothing: 'New Clothing',
-  electronics: 'Electronics',
-  secondhand: 'Secondhand Item'
-};
-
-const categoryLabels = {
-  transport: 'Transport',
-  food: 'Food',
-  energy: 'Energy',
-  shopping: 'Shopping'
-};
-
-const quantityLabels = {
-  transport: 'Distance (km)',
-  food: 'Number of Meals',
-  energy: 'Units (kWh / Hours)',
-  shopping: 'Number of Items'
-};
 
 const Log = () => {
   const { logs, addLog, deleteLog } = useActivityLog();
@@ -46,6 +13,7 @@ const Log = () => {
   const [quantity, setQuantity] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const firstType = Object.keys(emissionFactors[category])[0];
@@ -54,7 +22,19 @@ const Log = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!quantity || quantity <= 0) return;
+    setError('');
+    
+    const qtyNum = Number(quantity);
+    if (!qtyNum || qtyNum <= 0) {
+      setError("Please enter a valid quantity greater than 0");
+      return;
+    }
+    
+    const maxQty = quantityLimits[category] || 9999;
+    if (qtyNum > maxQty) {
+      setError(`Quantity cannot exceed ${maxQty} for ${categoryLabels[category]}`);
+      return;
+    }
 
     addLog({
       category,
@@ -68,9 +48,11 @@ const Log = () => {
     setTimeout(() => setShowSuccess(false), 3000);
   };
 
-  const sortedLogs = [...logs]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 10);
+  const sortedLogs = useMemo(() => {
+    return [...logs]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, LOGS_PER_PAGE);
+  }, [logs]);
 
   return (
     <div className="max-w-4xl mx-auto py-8 space-y-8 animate-in fade-in duration-500">
@@ -80,12 +62,10 @@ const Log = () => {
       </div>
 
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl relative overflow-hidden">
-        {showSuccess && (
-          <div className="absolute top-0 left-0 w-full bg-emerald-500 text-slate-950 font-medium text-sm py-2 px-4 flex items-center justify-center space-x-2 z-10 transition-all">
-            <CheckCircle2 size={18} />
-            <span>Activity logged!</span>
-          </div>
-        )}
+        <div role="alert" aria-live="polite" className={`absolute top-0 left-0 w-full bg-emerald-500 text-slate-950 font-medium text-sm py-2 px-4 flex items-center justify-center space-x-2 z-10 transition-all ${showSuccess ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`}>
+          <CheckCircle2 size={18} />
+          <span>{showSuccess ? "Activity logged!" : ""}</span>
+        </div>
         
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
           <div>
@@ -102,7 +82,7 @@ const Log = () => {
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
           </div>
@@ -121,7 +101,7 @@ const Log = () => {
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </div>
             </div>
           </div>
@@ -131,14 +111,18 @@ const Log = () => {
             <input
               id="quantity"
               type="number"
-              min="0"
+              min="0.1"
+              max={quantityLimits[category]}
               step="0.1"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors"
+              className={`w-full bg-slate-800/50 border rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors ${
+                error ? 'border-red-500' : 'border-slate-700'
+              }`}
               placeholder={`Enter ${quantityLabels[category].toLowerCase()}`}
               required
             />
+            {error && <p className="text-red-400 text-xs mt-1.5">{error}</p>}
           </div>
 
           <div>
@@ -149,6 +133,7 @@ const Log = () => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               max={new Date().toISOString().split('T')[0]}
+              min="2020-01-01"
               className="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-colors [color-scheme:dark]"
               required
             />
@@ -180,14 +165,15 @@ const Log = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-300">
+              <caption className="sr-only">Recent activity logs</caption>
               <thead className="bg-slate-800/50 text-xs uppercase font-medium text-slate-400">
                 <tr>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Category</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4 text-right">Quantity</th>
-                  <th className="px-6 py-4 text-right">CO₂ (kg)</th>
-                  <th className="px-6 py-4 text-center">Action</th>
+                  <th scope="col" className="px-6 py-4">Date</th>
+                  <th scope="col" className="px-6 py-4">Category</th>
+                  <th scope="col" className="px-6 py-4">Type</th>
+                  <th scope="col" className="px-6 py-4 text-right">Quantity</th>
+                  <th scope="col" className="px-6 py-4 text-right">CO₂ (kg)</th>
+                  <th scope="col" className="px-6 py-4 text-center">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
@@ -203,7 +189,7 @@ const Log = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-center">
                       <button
                         onClick={() => deleteLog(log.id)}
-                        className="text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all focus:opacity-100"
+                        className="text-slate-500 hover:text-red-400 transition-all"
                         title="Delete log"
                         aria-label="Delete log"
                       >

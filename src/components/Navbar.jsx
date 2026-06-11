@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, LayoutDashboard, FileEdit, Lightbulb, TrendingUp, BookOpen, Menu, X } from 'lucide-react';
 import { useUserProfile } from '../context/ProfileContext';
@@ -17,9 +17,7 @@ const Navbar = () => {
   const { profile } = useUserProfile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-slate-900 border-b border-slate-800 z-50">
@@ -60,6 +58,8 @@ const Navbar = () => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-slate-300 hover:text-emerald-400 focus:outline-none p-2"
               aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -69,7 +69,7 @@ const Navbar = () => {
 
       {/* Mobile Nav Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-slate-800 bg-slate-900">
+        <div id="mobile-menu" className="md:hidden border-t border-slate-800 bg-slate-900">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navLinks.map((link) => {
               if (link.path !== '/' && !profile.onboarded) return null;
@@ -78,6 +78,7 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors ${
                     isActive
                       ? 'bg-slate-800 text-emerald-400'

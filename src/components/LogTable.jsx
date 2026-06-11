@@ -5,13 +5,12 @@ import { LOGS_PER_PAGE } from '../data/constants';
 
 const LogTable = ({ logs, onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = LOGS_PER_PAGE;
   
-  const totalPages = Math.ceil(logs.length / itemsPerPage);
+  const totalPages = Math.ceil(logs.length / LOGS_PER_PAGE);
   
   const safePage = Math.min(currentPage, Math.max(1, totalPages));
 
-  const paginatedLogs = logs.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage);
+  const paginatedLogs = logs.slice((safePage - 1) * LOGS_PER_PAGE, safePage * LOGS_PER_PAGE);
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col">
@@ -36,6 +35,13 @@ const LogTable = ({ logs, onDelete }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/50">
+            {paginatedLogs.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-8 text-center text-slate-400 text-sm">
+                  No activity logs yet.
+                </td>
+              </tr>
+            )}
             {paginatedLogs.map(log => (
               <tr key={log.id} className="hover:bg-slate-800/30 transition-colors group">
                 <td className="px-6 py-4 whitespace-nowrap text-slate-400">{log.date}</td>
@@ -66,6 +72,7 @@ const LogTable = ({ logs, onDelete }) => {
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={safePage === 1}
+            aria-label="Go to previous page"
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Previous
@@ -76,6 +83,7 @@ const LogTable = ({ logs, onDelete }) => {
           <button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={safePage === totalPages}
+            aria-label="Go to next page"
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Next

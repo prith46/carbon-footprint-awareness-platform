@@ -2,12 +2,14 @@ import { memo } from 'react';
 import { quickActionsDB } from '../data/quickActions';
 
 const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
+  if (!checkedActions || typeof checkedActions.has !== 'function') return null;
+
   const actions = quickActionsDB[highestCategoryName] || quickActionsDB.generic;
   
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-100 mb-4">Quick Actions for Today</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <h2 id="quick-actions-heading" className="text-lg font-semibold text-slate-100 mb-4">Quick Actions for Today</h2>
+      <div role="group" aria-labelledby="quick-actions-heading" className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {actions.map((action) => {
           const isChecked = checkedActions.has(action.id);
           return (

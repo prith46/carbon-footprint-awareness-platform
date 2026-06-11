@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { quickActionsDB } from '../data/quickActions';
 
 const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
@@ -30,7 +31,10 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
                 <p className={`text-sm font-medium transition-colors ${isChecked ? 'text-emerald-400 line-through opacity-70' : 'text-slate-200'}`}>
                   {action.text}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">Saves ~{action.saving} CO₂</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Saves ~{action.saving} CO₂
+                  {isChecked && <span className="sr-only"> (completed for today)</span>}
+                </p>
               </div>
             </label>
           );
@@ -40,4 +44,4 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
   );
 };
 
-export default QuickActions;
+export default memo(QuickActions);

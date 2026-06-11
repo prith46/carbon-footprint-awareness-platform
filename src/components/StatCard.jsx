@@ -8,11 +8,11 @@ const colorMap = {
 };
 
 const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueClass }) => {
-  const c = colorMap[color] || colorMap.emerald;
+  const colorScheme = colorMap[color] || colorMap.emerald;
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group">
       <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-        <Icon aria-hidden="true" className={`w-24 h-24 ${c.textBg}`} />
+        <Icon aria-hidden="true" className={`w-24 h-24 ${colorScheme.textBg}`} />
       </div>
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -21,8 +21,8 @@ const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueC
             {value} {subtext && <span className="text-base font-normal opacity-70">{subtext}</span>}
           </h3>
         </div>
-        <div className={`p-2 rounded-lg ${c.bg}`}>
-          <Icon size={20} className={c.textMain} />
+        <div className={`p-2 rounded-lg ${colorScheme.bg}`}>
+          <Icon aria-hidden="true" size={20} className={colorScheme.textMain} />
         </div>
       </div>
     </div>

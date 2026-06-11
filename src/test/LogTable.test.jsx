@@ -141,4 +141,38 @@ describe('LogTable', () => {
     expect(screen.getAllByRole('row').length).toBe(2); // 1 item + 1 header
     expect(screen.getByText('9999-12-31')).toBeInTheDocument();
   });
+
+  it('18. Clicking Previous after clicking Next returns to page 1', () => {
+    const logs = generateLogs(LOGS_PER_PAGE + 1);
+    logs[0].date = '1111-11-11';
+    render(<LogTable logs={logs} onDelete={() => {}} />);
+    
+    // Go to next page
+    fireEvent.click(screen.getByText('Next'));
+    // Go back to previous page
+    fireEvent.click(screen.getByText('Previous'));
+    
+    expect(screen.getByText('1111-11-11')).toBeInTheDocument();
+  });
+
+  it('19. currentPage clamps when logs shrink below current page', () => {
+    const logs = generateLogs(LOGS_PER_PAGE * 2);
+    const { rerender } = render(<LogTable logs={logs} onDelete={() => {}} />);
+    
+    // Go to page 2
+    fireEvent.click(screen.getByText('Next'));
+    expect(screen.getByText('Next').parentElement).toHaveTextContent('Page 2 of 2');
+    
+    // Shrink logs to 1 page
+    const smallerLogs = generateLogs(LOGS_PER_PAGE);
+    rerender(<LogTable logs={smallerLogs} onDelete={() => {}} />);
+    
+    expect(screen.queryByText('Next')).not.toBeInTheDocument();
+  });
+
+  it('20. Renders raw type when log.type is not in typeLabels', () => {
+    const logs = [{ id: '1', date: '2024-05-10', category: 'food', type: 'unknown_type', quantity: 2 }];
+    render(<LogTable logs={logs} onDelete={() => {}} />);
+    expect(screen.getByText('unknown_type')).toBeInTheDocument();
+  });
 });

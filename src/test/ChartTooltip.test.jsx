@@ -65,4 +65,14 @@ describe('ChartTooltip', () => {
     render(<ChartTooltip active={true} payload={[{ value: 10 }]} label="Test Label" />);
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
   });
+
+  it('12. Renders payload[0].payload?.name fallback when label and name are absent', () => {
+    render(<ChartTooltip active={true} payload={[{ value: 10, payload: { name: 'DeepFallback' } }]} />);
+    expect(screen.getByText('DeepFallback')).toBeInTheDocument();
+  });
+
+  it('13. Does not render when payload is null', () => {
+    const { container } = render(<ChartTooltip active={true} payload={null} label="Test Label" />);
+    expect(container.firstChild).toBeNull();
+  });
 });

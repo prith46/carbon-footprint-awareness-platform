@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { quickActionsDB } from '../data/quickActions';
 
 const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
@@ -28,6 +29,8 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
                 <input
                   type="checkbox"
                   name={`quick-action-${action.id}`}
+                  id={`quick-action-${action.id}`}
+                  aria-describedby={`saving-${action.id}`}
                   className="w-5 h-5 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 bg-slate-800 transition-colors"
                   checked={isChecked}
                   onChange={() => typeof onCheck === 'function' && onCheck(action.id)}
@@ -37,7 +40,7 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
                 <p className={`text-sm font-medium transition-colors ${isChecked ? 'text-emerald-400 line-through opacity-70' : 'text-slate-200'}`}>
                   {action.text}
                 </p>
-                <p className="text-xs text-slate-400 mt-1">
+                <p id={`saving-${action.id}`} className="text-xs text-slate-400 mt-1">
                   Saves ~{action.saving} CO₂
                   {isChecked && <span className="sr-only"> (completed for today)</span>}
                 </p>
@@ -48,6 +51,12 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
       </div>
     </div>
   );
+};
+
+QuickActions.propTypes = {
+  highestCategoryName: PropTypes.string,
+  checkedActions: PropTypes.instanceOf(Set).isRequired,
+  onCheck: PropTypes.func.isRequired,
 };
 
 export default memo(QuickActions);

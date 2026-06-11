@@ -133,9 +133,22 @@ describe('Navbar', () => {
 
   it('15. Non-active links do NOT have aria-current', () => {
     ProfileContext.useUserProfile.mockReturnValue({ profile: { onboarded: true } });
-    renderWithRouter(<Navbar />, ['/']);
-    const dashboardLinks = screen.getAllByText('Dashboard');
-    const desktopLink = dashboardLinks[0].closest('a');
-    expect(desktopLink).not.toHaveAttribute('aria-current');
+    renderWithRouter(<Navbar />, ['/dashboard']);
+    const homeLinks = screen.getAllByText('Home');
+    const desktopHomeLink = homeLinks[0].closest('a');
+    expect(desktopHomeLink).not.toHaveAttribute('aria-current');
+  });
+
+  it('17. Focus returns to hamburger button after closing mobile menu', () => {
+    ProfileContext.useUserProfile.mockReturnValue({ profile: { onboarded: true } });
+    renderWithRouter(<Navbar />);
+    const toggleBtn = screen.getByLabelText('Toggle menu');
+    
+    fireEvent.click(toggleBtn);
+    expect(screen.getByRole('navigation').querySelector('#mobile-menu')).toBeInTheDocument();
+    
+    fireEvent.click(toggleBtn); // Close menu
+    expect(screen.getByRole('navigation').querySelector('#mobile-menu')).not.toBeInTheDocument();
+    expect(toggleBtn).toHaveFocus();
   });
 });

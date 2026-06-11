@@ -9,12 +9,14 @@ describe('WeeklyStats', () => {
 
   it('1. Renders "0.0" for 7-Day Total when sevenDayLogs is empty', () => {
     render(<WeeklyStats sevenDayLogs={[]} />);
-    expect(screen.getAllByText('0.0')[0]).toBeInTheDocument();
+    const totalLabel = screen.getByText('7-Day Total');
+    expect(totalLabel.parentElement.querySelector('h3')).toHaveTextContent('0.0');
   });
 
   it('2. Renders "0.0" for Daily Average when sevenDayLogs is empty', () => {
     render(<WeeklyStats sevenDayLogs={[]} />);
-    expect(screen.getAllByText('0.0')[1]).toBeInTheDocument();
+    const avgLabel = screen.getByText('Daily Average (7d)');
+    expect(avgLabel.parentElement.querySelector('h3')).toHaveTextContent('0.0');
   });
 
   it('3. Renders "N/A" for Best Day when sevenDayLogs is empty', () => {
@@ -85,5 +87,11 @@ describe('WeeklyStats', () => {
     render(<WeeklyStats sevenDayLogs={logs} />);
     // "5" is ignored, so Mon is the best day
     expect(screen.getByText('Mon (10.0 kg)')).toBeInTheDocument();
+  });
+  it('14. Negative values in sevenDayLogs are included in total', () => {
+    const logs = [{ name: 'Mon', value: 10 }, { name: 'Tue', value: -5 }];
+    render(<WeeklyStats sevenDayLogs={logs} />);
+    const totalLabel = screen.getByText('7-Day Total');
+    expect(totalLabel.parentElement.querySelector('h3')).toHaveTextContent('5.0');
   });
 });

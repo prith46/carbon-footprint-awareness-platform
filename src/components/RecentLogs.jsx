@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Activity, Car, Utensils, Zap, ShoppingBag } from 'lucide-react';
 import { typeLabels } from '../data/labels';
@@ -45,6 +46,16 @@ const RecentLogs = ({ logs }) => {
       </ul>
     </div>
   );
+};
+
+RecentLogs.propTypes = {
+  logs: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    kgCO2: PropTypes.number,
+  })).isRequired,
 };
 
 export default memo(RecentLogs);

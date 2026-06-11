@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import PropTypes from 'prop-types';
 
 const colorMap = {
   emerald: { bg: 'bg-emerald-500/10', textMain: 'text-emerald-400', textBg: 'text-emerald-500' },
@@ -8,6 +9,7 @@ const colorMap = {
 };
 
 const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueClass }) => {
+  if (!Icon) return null;
   const colorScheme = colorMap[color] || colorMap.emerald;
   return (
     <div aria-label={`${label}: ${typeof value === 'string' ? value : ''}`} className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group">
@@ -27,6 +29,15 @@ const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueC
       </div>
     </div>
   );
+};
+
+StatCard.propTypes = {
+  icon: PropTypes.elementType.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node]).isRequired,
+  subtext: PropTypes.string,
+  color: PropTypes.oneOf(['emerald', 'blue', 'purple', 'red']),
+  valueClass: PropTypes.string,
 };
 
 export default memo(StatCard);

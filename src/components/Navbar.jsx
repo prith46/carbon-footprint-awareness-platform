@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, memo, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, LayoutDashboard, FileEdit, Lightbulb, TrendingUp, BookOpen, Menu, X } from 'lucide-react';
 import { useUserProfile } from '../context/ProfileContext';
@@ -16,6 +16,17 @@ const Navbar = () => {
   const location = useLocation();
   const { profile } = useUserProfile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const prevOpenRef = useRef(false);
+
+  useEffect(() => {
+    if (prevOpenRef.current && !isMobileMenuOpen) {
+      buttonRef.current?.focus();
+    }
+    prevOpenRef.current = isMobileMenuOpen;
+  }, [isMobileMenuOpen]);
+
+  if (!profile) return null;
 
   const renderNavLinks = (className, onClick) => {
     return navLinks.map((link) => {
@@ -59,6 +70,7 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="flex items-center md:hidden">
             <button
+              ref={buttonRef}
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
               className="text-slate-300 hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 p-2"
               aria-label="Toggle menu"
@@ -82,5 +94,7 @@ const Navbar = () => {
     </nav>
   );
 };
+
+Navbar.propTypes = {};
 
 export default memo(Navbar);

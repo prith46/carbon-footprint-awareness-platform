@@ -1,4 +1,5 @@
 import { useMemo, memo } from 'react';
+import PropTypes from 'prop-types';
 import { Activity, TrendingDown, Award } from 'lucide-react';
 import StatCard from './StatCard';
 
@@ -30,6 +31,13 @@ const WeeklyStats = ({ sevenDayLogs }) => {
       <StatCard icon={Award} label="Best Day (Lowest)" value={bestDayStr} color="purple" />
     </div>
   );
+};
+
+WeeklyStats.propTypes = {
+  sevenDayLogs: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    value: PropTypes.number.isRequired,
+  })).isRequired,
 };
 
 export default memo(WeeklyStats);

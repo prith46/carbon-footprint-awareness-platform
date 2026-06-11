@@ -1,4 +1,5 @@
-import { useState, useMemo, memo } from 'react';
+import { useState, useMemo, useEffect, memo } from 'react';
+import PropTypes from 'prop-types';
 import { Trash2 } from 'lucide-react';
 import { typeLabels } from '../data/labels';
 import { LOGS_PER_PAGE } from '../data/constants';
@@ -8,11 +9,16 @@ const LogTable = ({ logs, onDelete }) => {
   
   const totalPages = Math.ceil(logs.length / LOGS_PER_PAGE);
   
-  const safePage = Math.min(currentPage, Math.max(1, totalPages));
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      // eslint-disable-next-line
+      setCurrentPage(totalPages);
+    }
+  }, [logs, totalPages, currentPage]);
 
   const paginatedLogs = useMemo(
-    () => logs.slice((safePage - 1) * LOGS_PER_PAGE, safePage * LOGS_PER_PAGE),
-    [logs, safePage]
+    () => logs.slice((currentPage - 1) * LOGS_PER_PAGE, currentPage * LOGS_PER_PAGE),
+    [logs, currentPage]
   );
 
   return (
@@ -74,18 +80,18 @@ const LogTable = ({ logs, onDelete }) => {
         <div className="px-6 py-4 border-t border-slate-800 flex items-center justify-between bg-slate-800/10 mt-auto">
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={safePage === 1}
+            disabled={currentPage === 1}
             aria-label="Go to previous page"
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
           <span aria-live="polite" aria-atomic="true" className="text-sm text-slate-400">
-            Page <span className="font-medium text-slate-200">{safePage}</span> of <span className="font-medium text-slate-200">{totalPages}</span>
+            Page <span className="font-medium text-slate-200">{currentPage}</span> of <span className="font-medium text-slate-200">{totalPages}</span>
           </span>
           <button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={safePage === totalPages}
+            disabled={currentPage === totalPages}
             aria-label="Go to next page"
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
@@ -95,6 +101,18 @@ const LogTable = ({ logs, onDelete }) => {
       )}
     </div>
   );
+};
+
+LogTable.propTypes = {
+  logs: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    quantity: PropTypes.number.isRequired,
+    kgCO2: PropTypes.number.isRequired,
+  })).isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default memo(LogTable);

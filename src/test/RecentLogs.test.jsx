@@ -95,4 +95,25 @@ describe('RecentLogs', () => {
     expect(li).toBeInTheDocument();
     expect(li.parentElement.tagName).toBe('UL');
   });
+
+  it('14. Renders all 4 category icons correctly', () => {
+    const logs = [
+      { id: '1', date: '2024', category: 'transport', type: 'car' },
+      { id: '2', date: '2024', category: 'food', type: 'meal' },
+      { id: '3', date: '2024', category: 'energy', type: 'elec' },
+      { id: '4', date: '2024', category: 'shopping', type: 'goods' }
+    ];
+    renderWithRouter(<RecentLogs logs={logs} />);
+    const svgs = screen.getAllByRole('listitem').map(li => li.querySelector('svg'));
+    expect(svgs).toHaveLength(4);
+    expect(svgs[0]).toHaveClass('text-blue-400'); // transport
+    expect(svgs[1]).toHaveClass('text-orange-400'); // food
+    expect(svgs[2]).toHaveClass('text-yellow-400'); // energy
+    expect(svgs[3]).toHaveClass('text-purple-400'); // shopping
+  });
+
+  it('15. Renders null without crashing when logs=undefined', () => {
+    const { container } = renderWithRouter(<RecentLogs logs={undefined} />);
+    expect(container.firstChild).toBeNull();
+  });
 });

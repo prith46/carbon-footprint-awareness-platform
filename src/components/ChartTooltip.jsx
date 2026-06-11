@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 
 const ChartTooltip = ({ active, payload, label, unit = "kg CO₂" }) => {
   if (active && payload && payload.length) {
@@ -10,7 +10,7 @@ const ChartTooltip = ({ active, payload, label, unit = "kg CO₂" }) => {
     const displayLabel = label || payload[0].name || payload[0].payload?.name;
 
     return (
-      <div className="bg-slate-800 border border-slate-700 p-3 rounded-lg shadow-xl">
+      <div role="tooltip" className="bg-slate-800 border border-slate-700 p-3 rounded-lg shadow-xl">
         <p className="text-slate-300 font-medium mb-1">{displayLabel}</p>
         <p className="text-emerald-400 font-bold">{formattedValue} {unit}</p>
       </div>
@@ -19,4 +19,4 @@ const ChartTooltip = ({ active, payload, label, unit = "kg CO₂" }) => {
   return null;
 };
 
-export default React.memo(ChartTooltip);
+export default memo(ChartTooltip);

@@ -12,7 +12,9 @@ const WeeklyStats = ({ sevenDayLogs }) => {
     const bestDayData = nonZeroDays.length > 0 
       ? nonZeroDays.reduce((min, curr) => curr.value < min.value ? curr : min, nonZeroDays[0])
       : null;
-    const bDayStr = bestDayData ? `${bestDayData.name} (${bestDayData.value.toFixed(1)} kg)` : 'N/A';
+    const bDayStr = bestDayData && Number.isFinite(bestDayData.value)
+      ? `${bestDayData.name} (${bestDayData.value.toFixed(1)} kg)`
+      : 'N/A';
     
     return { total7Days: t7Days, dailyAvg: dAvg, bestDayStr: bDayStr };
   }, [sevenDayLogs]);
@@ -28,7 +30,7 @@ const WeeklyStats = ({ sevenDayLogs }) => {
           </h3>
         </div>
         <div className="p-3 bg-slate-800 rounded-lg group-hover:bg-slate-700 transition-colors">
-          <Activity className="text-emerald-400" size={24} />
+          <Activity aria-hidden="true" className="text-emerald-400" size={24} />
         </div>
       </div>
       
@@ -41,7 +43,7 @@ const WeeklyStats = ({ sevenDayLogs }) => {
           </h3>
         </div>
         <div className="p-3 bg-slate-800 rounded-lg group-hover:bg-slate-700 transition-colors">
-          <TrendingDown className="text-blue-400" size={24} />
+          <TrendingDown aria-hidden="true" className="text-blue-400" size={24} />
         </div>
       </div>
 
@@ -51,7 +53,7 @@ const WeeklyStats = ({ sevenDayLogs }) => {
           <h3 className="text-2xl font-bold text-emerald-400 mt-1">{bestDayStr}</h3>
         </div>
         <div className="p-3 bg-slate-800 rounded-lg group-hover:bg-slate-700 transition-colors">
-          <Award className="text-purple-400" size={24} />
+          <Award aria-hidden="true" className="text-purple-400" size={24} />
         </div>
       </div>
     </div>

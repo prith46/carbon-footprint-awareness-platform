@@ -1,9 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Activity, TrendingDown, Award } from 'lucide-react';
 
 const WeeklyStats = ({ sevenDayLogs }) => {
   const { total7Days, dailyAvg, bestDayStr } = useMemo(() => {
-    const t7Days = sevenDayLogs.reduce((acc, curr) => acc + curr.value, 0);
+    const t7Days = sevenDayLogs
+      .filter(d => typeof d.value === 'number' && Number.isFinite(d.value))
+      .reduce((acc, curr) => acc + curr.value, 0);
     const dAvg = t7Days / 7;
 
     const nonZeroDays = sevenDayLogs.filter(d => d.value > 0);
@@ -20,7 +22,10 @@ const WeeklyStats = ({ sevenDayLogs }) => {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg flex items-center justify-between group">
         <div>
           <p className="text-slate-400 text-sm font-medium">7-Day Total</p>
-          <h3 className="text-2xl font-bold text-slate-100 mt-1">{total7Days.toFixed(1)} <span className="text-base font-normal text-slate-400">kg CO₂</span></h3>
+          <h3 className="text-2xl font-bold text-slate-100 mt-1">
+            {Number.isFinite(total7Days) ? total7Days.toFixed(1) : '0.0'}{' '}
+            <span className="text-base font-normal text-slate-400">kg CO₂</span>
+          </h3>
         </div>
         <div className="p-3 bg-slate-800 rounded-lg group-hover:bg-slate-700 transition-colors">
           <Activity className="text-emerald-400" size={24} />
@@ -30,7 +35,10 @@ const WeeklyStats = ({ sevenDayLogs }) => {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg flex items-center justify-between group">
         <div>
           <p className="text-slate-400 text-sm font-medium">Daily Average (7d)</p>
-          <h3 className="text-2xl font-bold text-slate-100 mt-1">{dailyAvg.toFixed(1)} <span className="text-base font-normal text-slate-400">kg CO₂</span></h3>
+          <h3 className="text-2xl font-bold text-slate-100 mt-1">
+            {Number.isFinite(dailyAvg) ? dailyAvg.toFixed(1) : '0.0'}{' '}
+            <span className="text-base font-normal text-slate-400">kg CO₂</span>
+          </h3>
         </div>
         <div className="p-3 bg-slate-800 rounded-lg group-hover:bg-slate-700 transition-colors">
           <TrendingDown className="text-blue-400" size={24} />
@@ -50,4 +58,4 @@ const WeeklyStats = ({ sevenDayLogs }) => {
   );
 };
 
-export default WeeklyStats;
+export default memo(WeeklyStats);

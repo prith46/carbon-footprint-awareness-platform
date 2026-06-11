@@ -17,8 +17,6 @@ const Navbar = () => {
   const { profile } = useUserProfile();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-
-
   return (
     <nav className="fixed top-0 left-0 w-full bg-slate-900 border-b border-slate-800 z-50">
       <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-emerald-600 text-white px-4 py-2 rounded z-50">
@@ -39,6 +37,7 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
+                  aria-current={isActive ? "page" : undefined}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-slate-800 text-emerald-400'
@@ -56,7 +55,7 @@ const Navbar = () => {
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-slate-300 hover:text-emerald-400 focus:outline-none p-2"
+              className="text-slate-300 hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 p-2"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
@@ -79,6 +78,7 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  aria-current={isActive ? "page" : undefined}
                   className={`flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-colors ${
                     isActive
                       ? 'bg-slate-800 text-emerald-400'

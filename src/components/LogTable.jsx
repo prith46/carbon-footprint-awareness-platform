@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { typeLabels } from '../data/labels';
 import { LOGS_PER_PAGE } from '../data/constants';
@@ -86,4 +86,4 @@ const LogTable = ({ logs, onDelete }) => {
   );
 };
 
-export default LogTable;
+export default memo(LogTable);

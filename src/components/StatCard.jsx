@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 const colorMap = {
   emerald: { bg: 'bg-emerald-500/10', textMain: 'text-emerald-400', textBg: 'text-emerald-500' },
   blue: { bg: 'bg-blue-500/10', textMain: 'text-blue-400', textBg: 'text-blue-500' },
@@ -10,7 +12,7 @@ const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueC
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group">
       <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-        <Icon className={`w-24 h-24 ${c.textBg}`} />
+        <Icon aria-hidden="true" className={`w-24 h-24 ${c.textBg}`} />
       </div>
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -27,4 +29,4 @@ const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueC
   );
 };
 
-export default StatCard;
+export default memo(StatCard);

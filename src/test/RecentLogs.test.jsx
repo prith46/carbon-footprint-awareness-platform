@@ -87,4 +87,12 @@ describe('RecentLogs', () => {
     const link = screen.getByLabelText('View all activity logs');
     expect(link.getAttribute('href')).toBe('/log');
   });
+
+  it('13. Empty state message is inside a <li> element, not a direct child of <ul>', () => {
+    renderWithRouter(<RecentLogs logs={[]} />);
+    const emptyText = screen.getByText('No recent logs yet.');
+    const li = emptyText.closest('li');
+    expect(li).toBeInTheDocument();
+    expect(li.parentElement.tagName).toBe('UL');
+  });
 });

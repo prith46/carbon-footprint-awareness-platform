@@ -40,7 +40,6 @@ describe('getInsights', () => {
   });
 
   it('difficulty is one of easy, medium, hard', () => {
-    const breakdown = { transport: 100, food: 50, energy: 20, shopping: 10 };
     // Get all tips by making them all top artificially in separate calls, or just test the DB implicitly
     const allCategories = ['transport', 'food', 'energy', 'shopping'];
     

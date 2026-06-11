@@ -10,7 +10,7 @@ const colorMap = {
 const StatCard = ({ icon: Icon, label, value, subtext, color = 'emerald', valueClass }) => {
   const colorScheme = colorMap[color] || colorMap.emerald;
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group">
+    <div aria-label={`${label}: ${typeof value === 'string' ? value : ''}`} className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg relative overflow-hidden group">
       <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
         <Icon aria-hidden="true" className={`w-24 h-24 ${colorScheme.textBg}`} />
       </div>

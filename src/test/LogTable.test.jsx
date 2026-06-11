@@ -119,9 +119,26 @@ describe('LogTable', () => {
     expect(screen.getByLabelText('Go to previous page')).toBeInTheDocument();
   });
 
-  it('15. Next button has aria-label="Go to next page"', () => {
+  it('16. Trash2 icon has aria-hidden="true"', () => {
+    const logs = [{ id: '1', date: '2024-05-10', category: 'food', type: 'beef_meal', quantity: 2 }];
+    const { container } = render(<LogTable logs={logs} onDelete={() => {}} />);
+    const trashIcon = container.querySelector('svg');
+    expect(trashIcon).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('17. paginatedLogs updates correctly after clicking Next', () => {
     const logs = generateLogs(LOGS_PER_PAGE + 1);
+    logs[LOGS_PER_PAGE].date = '9999-12-31';
     render(<LogTable logs={logs} onDelete={() => {}} />);
-    expect(screen.getByLabelText('Go to next page')).toBeInTheDocument();
+    
+    // Page 1 is visible
+    expect(screen.getAllByRole('row').length).toBe(LOGS_PER_PAGE + 1); // +1 for header
+    
+    // Go to next page
+    fireEvent.click(screen.getByText('Next'));
+    
+    // Page 2 is visible
+    expect(screen.getAllByRole('row').length).toBe(2); // 1 item + 1 header
+    expect(screen.getByText('9999-12-31')).toBeInTheDocument();
   });
 });

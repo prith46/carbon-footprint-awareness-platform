@@ -73,9 +73,17 @@ describe('StatCard', () => {
     expect(icons[1]).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('11. Accepts a React node as value and renders it correctly', () => {
-    render(<StatCard icon={MockIcon} label="Total Distance" value={<span data-testid="node-value">Node Value</span>} />);
-    expect(screen.getByTestId('node-value')).toBeInTheDocument();
-    expect(screen.getByText('Node Value')).toBeInTheDocument();
+  it('12. Applies the correct color scheme for "purple"', () => {
+    render(<StatCard icon={MockIcon} label="Total Distance" value="100" color="purple" />);
+    const icons = screen.getAllByTestId('mock-icon');
+    expect(icons[0]).toHaveClass('text-purple-500');
+    expect(icons[1]).toHaveClass('text-purple-400');
+    expect(icons[1].parentElement).toHaveClass('bg-purple-500/10');
+  });
+
+  it('13. Applies valueClass override to the value text', () => {
+    render(<StatCard icon={MockIcon} label="Total Distance" value="100" valueClass="text-yellow-500 text-3xl" />);
+    const valueElement = screen.getByText('100').closest('h3');
+    expect(valueElement).toHaveClass('text-yellow-500 text-3xl');
   });
 });

@@ -1,10 +1,13 @@
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { quickActionsDB } from '../data/quickActions';
 
 const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
-  if (!checkedActions || typeof checkedActions.has !== 'function') return null;
+  const actions = useMemo(
+    () => quickActionsDB[highestCategoryName] || quickActionsDB.generic,
+    [highestCategoryName]
+  );
 
-  const actions = quickActionsDB[highestCategoryName] || quickActionsDB.generic;
+  if (!checkedActions || typeof checkedActions.has !== 'function') return null;
   
   return (
     <div>
@@ -24,9 +27,10 @@ const QuickActions = ({ highestCategoryName, checkedActions, onCheck }) => {
               <div className="flex items-center h-5 mt-0.5">
                 <input
                   type="checkbox"
+                  name={`quick-action-${action.id}`}
                   className="w-5 h-5 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-slate-900 bg-slate-800 transition-colors"
                   checked={isChecked}
-                  onChange={() => onCheck(action.id)}
+                  onChange={() => typeof onCheck === 'function' && onCheck(action.id)}
                 />
               </div>
               <div className="ml-3 flex-1">

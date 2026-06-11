@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Trash2 } from 'lucide-react';
 import { typeLabels } from '../data/labels';
 import { LOGS_PER_PAGE } from '../data/constants';
@@ -10,7 +10,10 @@ const LogTable = ({ logs, onDelete }) => {
   
   const safePage = Math.min(currentPage, Math.max(1, totalPages));
 
-  const paginatedLogs = logs.slice((safePage - 1) * LOGS_PER_PAGE, safePage * LOGS_PER_PAGE);
+  const paginatedLogs = useMemo(
+    () => logs.slice((safePage - 1) * LOGS_PER_PAGE, safePage * LOGS_PER_PAGE),
+    [logs, safePage]
+  );
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col">
@@ -53,12 +56,12 @@ const LogTable = ({ logs, onDelete }) => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button
-                    onClick={() => onDelete(log.id)}
+                    onClick={() => typeof onDelete === 'function' && onDelete(log.id)}
                     className="text-slate-500 hover:text-red-400 transition-all"
                     title="Delete log"
                     aria-label={`Delete ${log.category} ${typeLabels[log.type] || log.type} entry from ${log.date}, ${log.quantity} units`}
                   >
-                    <Trash2 size={18} />
+                    <Trash2 aria-hidden="true" size={18} />
                   </button>
                 </td>
               </tr>
@@ -77,7 +80,7 @@ const LogTable = ({ logs, onDelete }) => {
           >
             Previous
           </button>
-          <span className="text-sm text-slate-400">
+          <span aria-live="polite" aria-atomic="true" className="text-sm text-slate-400">
             Page <span className="font-medium text-slate-200">{safePage}</span> of <span className="font-medium text-slate-200">{totalPages}</span>
           </span>
           <button

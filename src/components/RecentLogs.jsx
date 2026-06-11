@@ -11,6 +11,7 @@ const categoryIcons = {
 };
 
 const RecentLogs = ({ logs }) => {
+  if (!logs) return null;
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -19,13 +20,13 @@ const RecentLogs = ({ logs }) => {
       </div>
       <ul role="list" className="space-y-4">
         {logs.length === 0 ? (
-          <p className="text-slate-400 text-sm text-center py-4">No recent logs yet.</p>
+          <li><p className="text-slate-400 text-sm text-center py-4">No recent logs yet.</p></li>
         ) : (
           logs.map((log) => (
             <li key={log.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700/50">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-slate-800 rounded-lg">
-                  {categoryIcons[log.category] || <Activity size={18} className="text-slate-400" />}
+                  {categoryIcons[log.category] || <Activity aria-hidden="true" size={18} className="text-slate-400" />}
                 </div>
                 <div>
                   <p className="text-slate-200 font-medium text-sm">{typeLabels[log.type] || log.type}</p>

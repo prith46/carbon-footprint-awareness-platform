@@ -59,10 +59,10 @@ describe('WeeklyStats', () => {
     expect(screen.getAllByText('0.0')[0]).toBeInTheDocument();
   });
 
-  it('10. All three decorative icons have aria-hidden="true"', () => {
+  it('10. All decorative icons have aria-hidden="true"', () => {
     const { container } = render(<WeeklyStats sevenDayLogs={[]} />);
     const svgs = container.querySelectorAll('svg');
-    expect(svgs).toHaveLength(3);
+    expect(svgs).toHaveLength(6);
     svgs.forEach(svg => {
       expect(svg).toHaveAttribute('aria-hidden', 'true');
     });
@@ -72,5 +72,18 @@ describe('WeeklyStats', () => {
     const logs = [{ name: 'Friday', value: 1 }];
     render(<WeeklyStats sevenDayLogs={logs} />);
     expect(screen.getByText('Friday (1.0 kg)')).toBeInTheDocument();
+  });
+
+  it('12. Container has role="region" and aria-label="Weekly statistics"', () => {
+    render(<WeeklyStats sevenDayLogs={[]} />);
+    const region = screen.getByRole('region');
+    expect(region).toHaveAttribute('aria-label', 'Weekly statistics');
+  });
+
+  it('13. Non-numeric truthy values like the string "5" are filtered out of the best day computation', () => {
+    const logs = [{ name: 'Mon', value: 10 }, { name: 'Tue', value: '5' }];
+    render(<WeeklyStats sevenDayLogs={logs} />);
+    // "5" is ignored, so Mon is the best day
+    expect(screen.getByText('Mon (10.0 kg)')).toBeInTheDocument();
   });
 });

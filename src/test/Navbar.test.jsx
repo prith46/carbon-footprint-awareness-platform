@@ -123,4 +123,19 @@ describe('Navbar', () => {
     renderWithRouter(<Navbar />);
     expect(screen.getByText('Skip to content')).toBeInTheDocument();
   });
+
+  it('14. <nav> element has aria-label="Main navigation"', () => {
+    ProfileContext.useUserProfile.mockReturnValue({ profile: { onboarded: true } });
+    renderWithRouter(<Navbar />);
+    const nav = screen.getByRole('navigation');
+    expect(nav).toHaveAttribute('aria-label', 'Main navigation');
+  });
+
+  it('15. Non-active links do NOT have aria-current', () => {
+    ProfileContext.useUserProfile.mockReturnValue({ profile: { onboarded: true } });
+    renderWithRouter(<Navbar />, ['/']);
+    const dashboardLinks = screen.getAllByText('Dashboard');
+    const desktopLink = dashboardLinks[0].closest('a');
+    expect(desktopLink).not.toHaveAttribute('aria-current');
+  });
 });

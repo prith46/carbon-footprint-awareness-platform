@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { typeLabels } from '../data/labels';
 import { LOGS_PER_PAGE } from '../data/constants';
@@ -9,15 +9,9 @@ const LogTable = ({ logs, onDelete }) => {
   
   const totalPages = Math.ceil(logs.length / itemsPerPage);
   
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
-    } else if (totalPages === 0 && currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  }, [logs.length, totalPages, currentPage]);
+  const safePage = Math.min(currentPage, Math.max(1, totalPages));
 
-  const paginatedLogs = logs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const paginatedLogs = logs.slice((safePage - 1) * itemsPerPage, safePage * itemsPerPage);
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden flex flex-col">
@@ -49,14 +43,14 @@ const LogTable = ({ logs, onDelete }) => {
                 <td className="px-6 py-4 whitespace-nowrap">{typeLabels[log.type] || log.type}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-slate-300">{log.quantity}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right font-mono font-medium text-emerald-400">
-                  {log.kgCO2.toFixed(2)}
+                  {typeof log.kgCO2 === 'number' && Number.isFinite(log.kgCO2) ? log.kgCO2.toFixed(2) : '—'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-center">
                   <button
                     onClick={() => onDelete(log.id)}
                     className="text-slate-500 hover:text-red-400 transition-all"
                     title="Delete log"
-                    aria-label="Delete log"
+                    aria-label={`Delete ${log.category} ${typeLabels[log.type] || log.type} entry from ${log.date}, ${log.quantity} units`}
                   >
                     <Trash2 size={18} />
                   </button>
@@ -71,17 +65,17 @@ const LogTable = ({ logs, onDelete }) => {
         <div className="px-6 py-4 border-t border-slate-800 flex items-center justify-between bg-slate-800/10 mt-auto">
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
+            disabled={safePage === 1}
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
           <span className="text-sm text-slate-400">
-            Page <span className="font-medium text-slate-200">{currentPage}</span> of <span className="font-medium text-slate-200">{totalPages}</span>
+            Page <span className="font-medium text-slate-200">{safePage}</span> of <span className="font-medium text-slate-200">{totalPages}</span>
           </span>
           <button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
+            disabled={safePage === totalPages}
             className="px-4 py-2 text-sm font-medium text-slate-300 bg-slate-800 border border-slate-700 rounded-md hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Next

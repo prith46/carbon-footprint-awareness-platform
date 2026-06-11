@@ -1,6 +1,11 @@
+import React from 'react';
+
 const ChartTooltip = ({ active, payload, label, unit = "kg CO₂" }) => {
   if (active && payload && payload.length) {
     const value = payload[0].value;
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return null;
+    }
     const formattedValue = Number.isInteger(value) ? value : value.toFixed(1);
     const displayLabel = label || payload[0].name || payload[0].payload?.name;
 
@@ -14,4 +19,4 @@ const ChartTooltip = ({ active, payload, label, unit = "kg CO₂" }) => {
   return null;
 };
 
-export default ChartTooltip;
+export default React.memo(ChartTooltip);

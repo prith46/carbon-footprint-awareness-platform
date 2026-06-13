@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
-import { ActivityProvider } from './context/ActivityContext';
+import { ActivityProvider } from './context/ActivityProvider';
 import { ProfileProvider, useUserProfile } from './context/ProfileContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';

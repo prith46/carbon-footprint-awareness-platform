@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { ActivityProvider, useActivityLog } from '../context/ActivityContext';
+import { ActivityProvider } from '../context/ActivityProvider';
+import { useActivityLog } from '../context/ActivityContext';
 
 const renderWithContext = () => renderHook(() => useActivityLog(), { wrapper: ActivityProvider });
 
@@ -43,7 +44,7 @@ describe('ActivityContext', () => {
     expect(log.kgCO2).toBe(2.1); // 10 * 0.21
   });
 
-  it('addLog rejects invalid category', () => {
+  it('addLog rejects an entry with an unknown category', () => {
     const { result } = renderWithContext();
     act(() => {
       result.current.addLog({
@@ -52,6 +53,15 @@ describe('ActivityContext', () => {
         quantity: 10,
         date: '2024-01-01'
       });
+    });
+    expect(result.current.logs.length).toBe(0);
+  });
+
+  it('addLog rejects an entry with quantity of 0 or negative', () => {
+    const { result } = renderWithContext();
+    act(() => {
+      result.current.addLog({ category: 'transport', type: 'car_petrol', quantity: 0, date: '2024-01-01' });
+      result.current.addLog({ category: 'transport', type: 'car_petrol', quantity: -5, date: '2024-01-01' });
     });
     expect(result.current.logs.length).toBe(0);
   });
@@ -69,7 +79,7 @@ describe('ActivityContext', () => {
     expect(result.current.logs.length).toBe(0);
   });
 
-  it('addLog rejects invalid date format, falls back to today', () => {
+  it('addLog uses today\'s date when an invalid date format is passed', () => {
     const { result } = renderWithContext();
     act(() => {
       result.current.addLog({

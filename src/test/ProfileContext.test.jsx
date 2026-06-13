@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { ProfileProvider, useUserProfile } from '../context/ProfileContext';
+import { ProfileProvider } from '../context/ProfileProvider';
+import { useUserProfile } from '../context/ProfileContext';
 
 const renderWithContext = () => renderHook(() => useUserProfile(), { wrapper: ProfileProvider });
 
@@ -55,5 +56,42 @@ describe('ProfileContext', () => {
     const stored = JSON.parse(localStorage.getItem('carbon_profile'));
     expect(stored.name).toBe('Alex');
     expect(stored.onboarded).toBe(true);
+  });
+
+  it('setProfile with an invalid location keeps the previous value', () => {
+    const { result } = renderWithContext();
+    act(() => {
+      result.current.setProfile({ location: 'invalid_location' });
+    });
+    expect(result.current.profile.location).toBe('Bangalore'); // Default
+  });
+
+  it('setProfile with an invalid lifestyle keeps the previous value', () => {
+    const { result } = renderWithContext();
+    act(() => {
+      result.current.setProfile({ lifestyle: 'invalid_lifestyle' });
+    });
+    expect(result.current.profile.lifestyle).toBe('urban'); // Default
+  });
+
+  it('a non-object localStorage value falls back to DEFAULT_PROFILE', () => {
+    localStorage.setItem('carbon_profile', JSON.stringify("hello"));
+    const { result } = renderWithContext();
+    expect(result.current.profile.name).toBe("");
+    expect(result.current.profile.location).toBe("Bangalore");
+    expect(result.current.profile.lifestyle).toBe("urban");
+    expect(result.current.profile.onboarded).toBe(false);
+  });
+
+  it('onboarded loads correctly as a boolean from localStorage', () => {
+    localStorage.setItem('carbon_profile', JSON.stringify({
+      name: "Alex",
+      location: "Pune",
+      lifestyle: "suburban",
+      onboarded: true
+    }));
+    const { result } = renderWithContext();
+    expect(result.current.profile.onboarded).toBe(true);
+    expect(result.current.profile.location).toBe("Pune");
   });
 });

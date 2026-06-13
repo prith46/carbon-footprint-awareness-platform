@@ -1,10 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { calculateEmissions } from '../utils/calculateEmissions';
 import { emissionFactors } from '../data/emissionFactors';
+import useCurrentDate from '../hooks/useCurrentDate';
 
 const ActivityContext = createContext();
 
 export const ActivityProvider = ({ children }) => {
+  const currentDate = useCurrentDate();
   const [logs, setLogs] = useState(() => {
     try {
       const saved = localStorage.getItem('carbon_logs');
@@ -21,8 +25,7 @@ export const ActivityProvider = ({ children }) => {
         ...log,
         kgCO2: Number.isFinite(log.kgCO2) ? log.kgCO2 : 0
       }));
-    } catch (error) {
-      console.error("Failed to parse logs from localStorage", error);
+    } catch {
       return [];
     }
   });
@@ -39,6 +42,8 @@ export const ActivityProvider = ({ children }) => {
       return;
     }
 
+    if (!Number.isFinite(entry.quantity) || entry.quantity <= 0) return;
+
     const { total: kgCO2 } = calculateEmissions([entry]);
     
     // Validate date format YYYY-MM-DD
@@ -49,7 +54,7 @@ export const ActivityProvider = ({ children }) => {
     
     const newLog = {
       ...entry,
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      id: crypto.randomUUID(),
       kgCO2,
       date: validDate
     };
@@ -70,7 +75,7 @@ export const ActivityProvider = ({ children }) => {
   }, [logs]);
 
   const recentBreakdown = useMemo(() => {
-    const today = new Date();
+    const today = new Date(currentDate);
     today.setHours(0, 0, 0, 0);
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -82,7 +87,7 @@ export const ActivityProvider = ({ children }) => {
     });
 
     return calculateEmissions(recentLogs).breakdown;
-  }, [logs]);
+  }, [logs, currentDate]);
 
   const providerValue = useMemo(() => ({
     logs,
@@ -99,6 +104,10 @@ export const ActivityProvider = ({ children }) => {
       {children}
     </ActivityContext.Provider>
   );
+};
+
+ActivityProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export const useActivityLog = () => useContext(ActivityContext);

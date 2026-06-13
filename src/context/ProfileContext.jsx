@@ -1,4 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 
 const ProfileContext = createContext();
 
@@ -9,6 +11,9 @@ const DEFAULT_PROFILE = {
   onboarded: false
 };
 
+const VALID_LOCATIONS = ['Bangalore', 'Chennai', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune', 'Other'];
+const VALID_LIFESTYLES = ['urban', 'suburban', 'rural'];
+
 export const ProfileProvider = ({ children }) => {
   const [profile, setProfileState] = useState(() => {
     try {
@@ -17,16 +22,15 @@ export const ProfileProvider = ({ children }) => {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
           return {
-            name: (parsed.name ?? DEFAULT_PROFILE.name).slice(0, 50),
-            location: parsed.location ?? DEFAULT_PROFILE.location,
-            lifestyle: parsed.lifestyle ?? DEFAULT_PROFILE.lifestyle,
+            name: String(parsed.name ?? DEFAULT_PROFILE.name).slice(0, 50),
+            location: VALID_LOCATIONS.includes(parsed.location) ? parsed.location : DEFAULT_PROFILE.location,
+            lifestyle: VALID_LIFESTYLES.includes(parsed.lifestyle) ? parsed.lifestyle : DEFAULT_PROFILE.lifestyle,
             onboarded: parsed.onboarded ?? DEFAULT_PROFILE.onboarded
           };
         }
       }
       return DEFAULT_PROFILE;
-    } catch (error) {
-      console.error("Failed to parse profile from localStorage", error);
+    } catch {
       return DEFAULT_PROFILE;
     }
   });
@@ -55,6 +59,10 @@ export const ProfileProvider = ({ children }) => {
       {children}
     </ProfileContext.Provider>
   );
+};
+
+ProfileProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export const useUserProfile = () => useContext(ProfileContext);
